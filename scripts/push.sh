@@ -16,5 +16,6 @@ if [[ -n $DOCKER_REGISTRY ]]; then
     REPOSITORY="$DOCKER_REGISTRY/$REPOSITORY"
 fi
 
-docker push "$REPOSITORY:$VERSION"
-docker rmi "$REPOSITORY:$VERSION"
+buildah login --password $DOCKER_PASSWORD --username $DOCKER_USERNAME $DOCKER_REGISTRY
+
+buildah push "$REPOSITORY:$VERSION"
