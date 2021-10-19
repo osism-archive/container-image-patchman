@@ -1,5 +1,5 @@
 ARG PYTHON_VERSION=3.8
-FROM python:${PYTHON_VERSION}-alpine
+FROM python:${PYTHON_VERSION}
 
 ARG VERSION=latest
 
@@ -14,21 +14,18 @@ COPY files/requirements.txt /requirements.txt
 COPY files/run.sh /run.sh
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
       curl \
-      libmagic \
-      libpq \
-      libstdc++ \
-      libxslt \
-    && apk add --no-cache --virtual .build-deps \
-      build-base \
       git \
-      libffi-dev \
-      libxml2-dev \
-      libxslt-dev \
-      openssl-dev \
-      postgresql-dev \
+      python3-apt \
       python3-dev \
+    && apt-get clean \
+    && apt-get autoremove -y \
+    && mkdir /configuration \
+    && rm -rf \
+      /var/lib/apt/lists/* \
+      /var/tmp/* \
     && chmod +x /wait
 
 RUN if [ $VERSION = "latest" ]; then git clone https://github.com/furlongm/patchman.git /repository; fi \
@@ -40,14 +37,16 @@ RUN pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir -r /requirements.txt \
     && pip3 install --no-cache-dir /repository
 
-RUN adduser -D patchman \
+RUN useradd patchman \
     && chown patchman: /etc/patchman/local_settings.py \
     && mkdir -p /var/lib/patchman/db \
     && lib=$(python3 -c "import site; print(site.getsitepackages()[0])") \
     && mkdir -p "$lib/run/static" \
     && chown -R patchman: /var/lib/patchman "$lib/run/static"
 
-RUN apk del .build-deps \
+RUN apt-get remove -y \
+      git \
+      python3-dev \
     && rm -rf /repository /requirements.txt
 
 USER patchman
