@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.8
+ARG PYTHON_VERSION=3.9
 FROM python:${PYTHON_VERSION}
 
 ARG VERSION=latest
@@ -35,7 +35,8 @@ RUN if [ $VERSION = "latest" ]; then git clone https://github.com/furlongm/patch
 RUN pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir -r /repository/requirements.txt \
     && pip3 install --no-cache-dir -r /requirements.txt \
-    && pip3 install --no-cache-dir /repository
+    && pip3 install --no-cache-dir /repository \
+    && ln -s /usr/lib/python3/dist-packages/*apt* /usr/local/lib/python3.9/site-packages
 
 RUN useradd patchman \
     && chown patchman: /etc/patchman/local_settings.py \
