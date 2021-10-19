@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Available environment variables
 #
@@ -19,7 +19,7 @@ patchman-manage makemigrations
 patchman-manage migrate --run-syncdb
 
 result=$(echo "from django.contrib.auth import get_user_model; User = get_user_model(); print(User.objects.filter(username='$PATCHMAN_USERNAME').count()>0)" | patchman-manage shell | tail -n 1)
-if [ $result == "False" ]; then
+if [[ $result == "False" ]]; then
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('$PATCHMAN_USERNAME', '$PATCHMAN_USERNAME@patchman.local', '$PATCHMAN_PASSWORD')" | patchman-manage shell
 fi
 
