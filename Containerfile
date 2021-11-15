@@ -12,6 +12,7 @@ ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait
 COPY files/local_settings.py /etc/patchman/local_settings.py
 COPY files/requirements.txt /requirements.txt
 COPY files/run.sh /run.sh
+COPY files/fixtures.json /fixtures.json
 
 # hadolint ignore=DL3018
 RUN apt-get update \
