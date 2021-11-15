@@ -17,6 +17,7 @@ PATCHMAN_PORT=${PATCHMAN_PORT:-8000}
 patchman-manage collectstatic --noinput
 patchman-manage makemigrations
 patchman-manage migrate --run-syncdb
+patchman-manage loaddata /fixtures.json
 
 result=$(echo "from django.contrib.auth import get_user_model; User = get_user_model(); print(User.objects.filter(username='$PATCHMAN_USERNAME').count()>0)" | patchman-manage shell | tail -n 1)
 if [[ $result == "False" ]]; then
